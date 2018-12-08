@@ -29,19 +29,49 @@ namespace AoC._8
 				return sum;
 			}
 		}
+
+		public  Node FillNode(List<int> sequence)
+		{
+			var nrSubNodes = sequence.First();
+			var nrMetadata = sequence.Skip(1).First();
+
+			var modSequence = sequence.Skip(2).ToList();
+			for (int i = 0; i < nrSubNodes; i++)
+			{
+				var node = FillNode(modSequence);
+				ChildNodes.Add(node);
+				modSequence = sequence.Skip(2).ToList();
+			}
+
+			if (nrMetadata == 0)
+				throw new Exception("Metadata must contain on or more elements");
+
+			for (int i = 0; i < nrMetadata; i++)
+			{
+				modSequence = modSequence.Skip(1).ToList();
+				Metadata.Add(modSequence.First());
+			}
+
+			return this;
+		}
 	}
 
 	class Program
 	{
 		static void Star1(List<int> sequence)
 		{
+			var firstNode = new Node();
+			firstNode.FillNode(sequence);
+
+			Console.WriteLine($"Metadata Sum {firstNode.MetadataCompleteSum}");
 		}
 
 		static void Main(string[] args)
 		{
 			Console.WriteLine("Advent of Code Day 8!");
 
-			var Sequence = System.IO.File.ReadAllText("input.txt").Split(',').Select(Parse).ToList();
+			var sequence = System.IO.File.ReadAllText("input.txt").Split(',').Select(Parse).ToList();
+			Star1(sequence);
 		}
 	}
 }
