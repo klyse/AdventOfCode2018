@@ -144,30 +144,14 @@ namespace AoC._7
 				var depString = GetDependencyString(dependentChar);
 				dependencyList.Add(depString);
 			}
+			
+			var dependencyString = string.Concat(dependencyList);
 
-			var maxStrLength = dependencyList.OrderByDescending(s => s.Length).FirstOrDefault()?.Length; // get longest string length
+			dependencyString = string.Concat(dependencyString.Reverse()
+															 .Distinct()
+															 .Reverse());
 
-			var dependencyString = new List<char>();
-			for (var i = 0; i < maxStrLength; i++)
-			{
-				var depChars = new List<char>();
-				foreach (var dependency in dependencyList)
-				{
-					if (i < dependency.Length)
-					{
-						depChars.Add(dependency[i]);
-					}
-				}
-
-				var orderByDescending = depChars.OrderByDescending(c => c);
-				dependencyString.AddRange(orderByDescending.ToList());
-			}
-
-			dependencyString.Reverse();
-			dependencyString = dependencyString.Distinct().ToList();
-			dependencyString.Reverse();
-
-			var retVal = $"{observedChar}{string.Concat(dependencyString)}";
+			var retVal = $"{observedChar}{dependencyString}";
 			return retVal;
 		}
 
@@ -176,9 +160,12 @@ namespace AoC._7
 			Console.WriteLine("Advent of Code Day 7!");
 
 			var finalChar = Dependencies.Select(c => c.DependsOnChar).Except(Dependencies.Select(c => c.ObservedChar)).ToList();
+			var initialChars = Dependencies.Select(c => c.ObservedChar).Except(Dependencies.Select(c => c.DependsOnChar)).ToList();
 
 			if (finalChar.Count > 1)
 				throw new Exception("More than one final char");
+
+			var s = GetDependencyString('W');
 
 			var dependencyString = string.Concat(GetDependencyString(finalChar.First()).Reverse());
 
