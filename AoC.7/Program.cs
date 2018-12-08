@@ -134,26 +134,69 @@ namespace AoC._7
 		//	new Dependency('F', 'E'),
 		//};
 
-		static void Main()
+		private static int GetWorkTime(char v)
 		{
-			Console.WriteLine("Advent of Code Day 7!");
+			return v - 'A' + 61;
+		}
+
+		public static void Star2(List<Dependency> dep)
+		{
+			var allSteps = dep.Select(x => x.ObservedChar).Concat(dep.Select(x => x.DependsOnChar)).Distinct().OrderBy(x => x).ToList();
+			var workers = new List<int>(5) {0, 0, 0, 0, 0};
+			var currentSecond = 0;
+			var doneList = new List<(char step, int finish)>();
+
+			while (allSteps.Any() || workers.Any(w => w > currentSecond))
+			{
+				doneList.Where(d => d.finish <= currentSecond).ToList().ForEach(x => dep.RemoveAll(d => d.ObservedChar == x.step));
+				var second = currentSecond;
+				doneList.RemoveAll(d => d.finish <= second);
+
+				var valid = allSteps.Where(s => dep.All(d => d.DependsOnChar != s)).ToList();
+
+				for (var w = 0; w < workers.Count && valid.Any(); w++)
+				{
+					if (workers[w] <= currentSecond)
+					{
+						workers[w] = GetWorkTime(valid.First()) + currentSecond;
+						allSteps.Remove(valid.First());
+						doneList.Add((valid.First(), workers[w]));
+						valid.RemoveAt(0);
+					}
+				}
+
+				currentSecond++;
+			}
+
+			Console.WriteLine($"Star 2 Seconds: {currentSecond}");
+		}
 
 
-			var allSteps = Dependencies.Select(x => x.ObservedChar).Concat(Dependencies.Select(x => x.DependsOnChar)).Distinct().OrderBy(x => x).ToList();
+		static void Star1(List<Dependency> dep)
+		{
+			var allSteps = dep.Select(x => x.ObservedChar).Concat(dep.Select(x => x.DependsOnChar)).Distinct().OrderBy(x => x).ToList();
 			var result = string.Empty;
 
 			while (allSteps.Any())
 			{
-				var valid = allSteps.First(s => Dependencies.All(d => d.DependsOnChar != s));
+				var valid = allSteps.First(s => dep.All(d => d.DependsOnChar != s));
 
 				result += valid;
 
 				allSteps.Remove(valid);
-				Dependencies.RemoveAll(d => d.ObservedChar == valid);
+				dep.RemoveAll(d => d.ObservedChar == valid);
 			}
 
-
 			Console.WriteLine($"Star 1 Dependency String: {result}");
+		}
+
+		static void Main()
+		{
+			Console.WriteLine("Advent of Code Day 7!");
+			Console.WriteLine("Ok, honestly, I cheated today. Thank you @dylanfromwinnipeg for sharing your code! I was to stupid for this challenge ;)");
+
+			Star1(Dependencies.Select(c => c).ToList()); // lousy copy
+			Star2(Dependencies.Select(c => c).ToList()); // lousy copy
 
 			Console.ReadLine();
 		}
