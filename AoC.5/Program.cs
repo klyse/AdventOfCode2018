@@ -35,7 +35,7 @@ namespace AoC._5
 			return sequence.ToString();
 		}
 
-		static void Main(string[] args)
+		static void Main()
 		{
 			Console.WriteLine("Advent of Code Day 5!");
 

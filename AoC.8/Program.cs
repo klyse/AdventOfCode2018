@@ -76,7 +76,7 @@ namespace AoC._8
 
 	class Program
 	{
-		static void Main(string[] args)
+		static void Main()
 		{
 			Console.WriteLine("Advent of Code Day 8!");
 

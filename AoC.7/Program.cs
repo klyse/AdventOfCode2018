@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -125,8 +125,8 @@ namespace AoC._7
 
 		public static readonly List<Dependency> Dependencies = new List<Dependency>
 		{
-			new Dependency('C', 'F'),
 			new Dependency('C', 'A'),
+			new Dependency('C', 'F'),
 			new Dependency('A', 'B'),
 			new Dependency('A', 'D'),
 			new Dependency('B', 'E'),
@@ -148,7 +148,7 @@ namespace AoC._7
 			var maxStrLength = dependencyList.OrderByDescending(s => s.Length).FirstOrDefault()?.Length; // get longest string length
 
 			var dependencyString = new List<char>();
-			for (int i = 0; i < maxStrLength; i++)
+			for (var i = 0; i < maxStrLength; i++)
 			{
 				var depChars = new List<char>();
 				foreach (var dependency in dependencyList)
@@ -171,7 +171,7 @@ namespace AoC._7
 			return retVal;
 		}
 
-		static void Main(string[] args)
+		static void Main()
 		{
 			Console.WriteLine("Advent of Code Day 7!");
 

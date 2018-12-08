@@ -7,9 +7,9 @@ using System.Drawing.Imaging;
 
 namespace AoC._6
 {
-	class Program
+	internal class Program
 	{
-		static readonly List<Point> InputCoordinates = new List<Point>
+		private static readonly List<Point> InputCoordinates = new List<Point>
 		{
 			new Point(137, 282),
 			new Point(229, 214),
@@ -148,7 +148,7 @@ namespace AoC._6
 			public int Distance { get; set; } = MaxValue;
 		}
 
-		static void Star1(List<Coordinate> coordinates)
+		private static void Star1(List<Coordinate> coordinates)
 		{
 			var boarderYMin = 0;
 			var boarderYMax = InputCoordinates.Max(c => c.Y) + 20;
@@ -168,136 +168,113 @@ namespace AoC._6
 			{
 				var input = coordinates[c];
 				for (var x = boarderXMin; x < boarderXMax; x++)
-				{
-					for (var y = boarderYMin; y < boarderYMax; y++)
-					{
-						coordinateSystem[c, x, y] = CalculateManhattanDistance(new Point(x, y), input.Point);
-					}
-				}
+				for (var y = boarderYMin; y < boarderYMax; y++)
+					coordinateSystem[c, x, y] = CalculateManhattanDistance(new Point(x, y), input.Point);
 			}
 
 			var evaluatedCoordinates = new Field[boarderXMax - boarderXMin, boarderYMax - boarderXMin];
 
 			for (var x = boarderXMin; x < boarderXMax; x++)
+			for (var y = boarderYMin; y < boarderYMax; y++)
 			{
-				for (var y = boarderYMin; y < boarderYMax; y++)
+				var evaluatedCoordinate = evaluatedCoordinates[x, y] = evaluatedCoordinates[x, y] ?? new Field();
+
+				var same = false;
+				for (var c = 0; c < numCoordinates; c++)
 				{
-					var evaluatedCoordinate = evaluatedCoordinates[x, y] = evaluatedCoordinates[x, y] ?? new Field();
+					var coordinate = coordinateSystem[c, x, y];
 
-					var same = false;
-					for (var c = 0; c < numCoordinates; c++)
+					if (evaluatedCoordinate.Distance == coordinate)
 					{
-						var coordinate = coordinateSystem[c, x, y];
-
-						if (evaluatedCoordinate.Distance == coordinate)
-						{
-							same = true;
-						}
-						else if (evaluatedCoordinate.Distance > coordinate)
-						{
-							same = false;
-							evaluatedCoordinate.Distance = coordinate;
-							evaluatedCoordinate.PointId = c;
-						}
+						same = true;
 					}
-
-					if (same)
-						evaluatedCoordinate.Distance = -1;
+					else if (evaluatedCoordinate.Distance > coordinate)
+					{
+						same = false;
+						evaluatedCoordinate.Distance = coordinate;
+						evaluatedCoordinate.PointId = c;
+					}
 				}
+
+				if (same)
+					evaluatedCoordinate.Distance = -1;
 			}
 
 			var draw = false;
+			// ReSharper disable once ConditionIsAlwaysTrueOrFalse
 			if (draw)
-			{
+				// ReSharper disable HeuristicUnreachableCode
 				for (var y = boarderYMin; y < boarderYMax; y++)
 				{
 					for (var x = boarderXMin; x < boarderXMax; x++)
-					{
 						if (evaluatedCoordinates[x, y].Distance < 0)
-						{
 							Console.Write(" . ");
-						}
 						else if (evaluatedCoordinates[x, y].Distance == 0)
-						{
 							Console.Write(" x ");
-						}
 						else
 							Console.Write($"{evaluatedCoordinates[x, y].PointId}".PadLeft(3));
-					}
 
 					Console.WriteLine();
 				}
-			}
+			// ReSharper restore HeuristicUnreachableCode
 
 			Console.WriteLine("Results:");
 
 			var resultSet = new Dictionary<int, int>();
 
 			for (var x = boarderXMin; x < boarderXMax; x++)
+			for (var y = boarderYMin; y < boarderYMax; y++)
 			{
-				for (var y = boarderYMin; y < boarderYMax; y++)
+				var point = evaluatedCoordinates[x, y];
+
+				if (evaluatedCoordinates[x, y].Distance < 0)
+					continue;
+
+				if (!resultSet.ContainsKey(point.PointId))
+					resultSet.Add(point.PointId, 0);
+
+				if (x <= minValX || x >= maxValX ||
+					y <= minValY || y >= maxValY)
 				{
-					var point = evaluatedCoordinates[x, y];
-
-					if (evaluatedCoordinates[x, y].Distance < 0)
-						continue;
-
-					if (!resultSet.ContainsKey(point.PointId))
-						resultSet.Add(point.PointId, 0);
-
-					if (x <= minValX || x >= maxValX ||
-						y <= minValY || y >= maxValY)
-					{
-						resultSet[point.PointId] = MinValue;
-						continue;
-					}
-
-					resultSet[point.PointId]++;
+					resultSet[point.PointId] = MinValue;
+					continue;
 				}
+
+				resultSet[point.PointId]++;
 			}
 
-			foreach (var number in resultSet.OrderBy(c => c.Value))
-			{
-				Console.WriteLine($"PointID: {number}");
-			}
+			foreach (var number in resultSet.OrderBy(c => c.Value)) Console.WriteLine($"PointID: {number}");
 
 			var biggestPoint = resultSet.OrderBy(c => c.Value).Last().Key;
 
-			var bmp = true;
-			if (bmp)
+			var pic = new Bitmap(boarderXMax, boarderYMax);
+			for (var y = boarderYMin; y < boarderYMax; y++)
 			{
-				var pic = new Bitmap(boarderXMax, boarderYMax);
-				for (var y = boarderYMin; y < boarderYMax; y++)
+				for (var x = boarderXMin; x < boarderXMax; x++)
 				{
-					for (var x = boarderXMin; x < boarderXMax; x++)
-					{
-						if (evaluatedCoordinates[x, y].Distance < 0)
-						{
-							continue;
-						}
+					if (evaluatedCoordinates[x, y].Distance < 0) continue;
 
-						if (biggestPoint == evaluatedCoordinates[x, y].PointId)
-						{
-							pic.SetPixel(x, y, Color.Red);
-						}
-						else if (y == minValY || y == maxValY || x == minValX || x == maxValX)
-						{
-							var col = Color.FromArgb(150, Color.Black);
-							pic.SetPixel(x, y, col);
-						}
-						else if (evaluatedCoordinates[x, y].Distance == 0)
-						{
-							pic.SetPixel(x, y, Color.Fuchsia);
-						}
-						else if (resultSet[evaluatedCoordinates[x, y].PointId] < 0)
-						{
-							var col = Color.FromArgb(150, Colors[evaluatedCoordinates[x, y].PointId]);
-							pic.SetPixel(x, y, col);
-						}
-						else
-						{
-							pic.SetPixel(x, y, Colors[evaluatedCoordinates[x, y].PointId]);
-						}
+					if (biggestPoint == evaluatedCoordinates[x, y].PointId)
+					{
+						pic.SetPixel(x, y, Color.Red);
+					}
+					else if (y == minValY || y == maxValY || x == minValX || x == maxValX)
+					{
+						var col = Color.FromArgb(150, Color.Black);
+						pic.SetPixel(x, y, col);
+					}
+					else if (evaluatedCoordinates[x, y].Distance == 0)
+					{
+						pic.SetPixel(x, y, Color.Fuchsia);
+					}
+					else if (resultSet[evaluatedCoordinates[x, y].PointId] < 0)
+					{
+						var col = Color.FromArgb(150, Colors[evaluatedCoordinates[x, y].PointId]);
+						pic.SetPixel(x, y, col);
+					}
+					else
+					{
+						pic.SetPixel(x, y, Colors[evaluatedCoordinates[x, y].PointId]);
 					}
 				}
 
@@ -307,10 +284,12 @@ namespace AoC._6
 
 		public static void Star2(List<Coordinate> coordinates)
 		{
+#pragma warning disable 219
 			var boarderYMin = 0;
 			var boarderYMax = InputCoordinates.Max(c => c.Y) + 1;
 			var boarderXMin = 0;
 			var boarderXMax = InputCoordinates.Max(c => c.X) + 1;
+#pragma warning restore 219
 
 			var minValX = InputCoordinates.Min(c => c.X);
 			var minValY = InputCoordinates.Min(c => c.Y);
@@ -326,12 +305,10 @@ namespace AoC._6
 			{
 				var input = coordinates[c];
 				for (var x = minValX; x < maxValX; x++)
+				for (var y = minValY; y < maxValY; y++)
 				{
-					for (var y = minValY; y < maxValY; y++)
-					{
-						coordinateSystem[x, y] += Math.Abs(x - input.Point.X) + Math.Abs(y - input.Point.Y);
-						maxCol = Math.Max(maxCol, coordinateSystem[x, y]);
-					}
+					coordinateSystem[x, y] += Math.Abs(x - input.Point.X) + Math.Abs(y - input.Point.Y);
+					maxCol = Math.Max(maxCol, coordinateSystem[x, y]);
 				}
 			}
 
@@ -341,33 +318,26 @@ namespace AoC._6
 			var areaSmallerThan10000 = 0;
 
 			for (var y = minValY; y < maxValY; y++)
-			{
-				for (var x = minValX; x < maxValX; x++)
+			for (var x = minValX; x < maxValX; x++)
+				if (coordinateSystem[x, y] < 10000)
 				{
-					if (coordinateSystem[x, y] < 10000)
-					{
-						pic.SetPixel(x - minValX, y - minValY, Color.Yellow);
-						areaSmallerThan10000++;
-					}
-					else
-					{
-						var a = (int)(coordinateSystem[x, y] * col);
-						pic.SetPixel(x - minValX, y - minValY, Color.FromArgb(a, Color.Red));
-					}
+					pic.SetPixel(x - minValX, y - minValY, Color.Yellow);
+					areaSmallerThan10000++;
 				}
-			}
+				else
+				{
+					var a = (int)(coordinateSystem[x, y] * col);
+					pic.SetPixel(x - minValX, y - minValY, Color.FromArgb(a, Color.Red));
+				}
 
-			foreach (var coordinate in coordinates)
-			{
-				pic.SetPixel(coordinate.Point.X - minValX, coordinate.Point.Y - minValY, Color.Blue);
-			}
+			foreach (var coordinate in coordinates) pic.SetPixel(coordinate.Point.X - minValX, coordinate.Point.Y - minValY, Color.Blue);
 
 			pic.Save("test1.png", ImageFormat.Png);
 
 			Console.WriteLine($"Area smaller than 10.000: {areaSmallerThan10000}");
 		}
 
-		static void Main(string[] args)
+		private static void Main()
 		{
 			Console.WriteLine("Advent of Code Day 6!");
 
