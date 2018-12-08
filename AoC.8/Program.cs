@@ -36,7 +36,7 @@ namespace AoC._8
 				var sum = 0;
 				foreach (var metadata in Metadata)
 				{
-					if (metadata > 0 && metadata < ChildNodes.Count)
+					if (metadata > 0 && metadata <= ChildNodes.Count)
 					{
 						sum += ChildNodes[metadata - 1].NodeSum;
 					}
