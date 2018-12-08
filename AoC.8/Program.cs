@@ -12,35 +12,35 @@ namespace AoC._8
 		public List<int> Metadata { get; set; } = new List<int>();
 
 		public bool HasChildNodes => ChildNodes.Any();
-
-		public int MetadataSum => Metadata.Sum();
-
-		public int MetadataCompleteSum
+		
+		public int MetadataSum
 		{
 			get
 			{
-				var sum = MetadataSum;
+				var sum = Metadata.Sum();
 
 				foreach (var childNode in ChildNodes)
 				{
-					sum += childNode.MetadataCompleteSum;
+					sum += childNode.MetadataSum;
 				}
 
 				return sum;
 			}
 		}
 
-		public  Node FillNode(List<int> sequence)
-		{
-			var nrSubNodes = sequence.First();
-			var nrMetadata = sequence.Skip(1).First();
+		public List<int> Sequence { get; set; }
 
-			var modSequence = sequence.Skip(2).ToList();
+		public static Node FillNode(Node node)
+		{
+			var nrSubNodes = node.Sequence.First();
+			var nrMetadata = node.Sequence.Skip(1).First();
+
+			node.Sequence = node.Sequence.Skip(2).ToList();
 			for (int i = 0; i < nrSubNodes; i++)
 			{
-				var node = FillNode(modSequence);
-				ChildNodes.Add(node);
-				modSequence = sequence.Skip(2).ToList();
+				var childNode = FillNode(new Node {Sequence = node.Sequence});
+				node.ChildNodes.Add(childNode);
+				node.Sequence = childNode.Sequence;
 			}
 
 			if (nrMetadata == 0)
@@ -48,11 +48,11 @@ namespace AoC._8
 
 			for (int i = 0; i < nrMetadata; i++)
 			{
-				modSequence = modSequence.Skip(1).ToList();
-				Metadata.Add(modSequence.First());
+				node.Metadata.Add(node.Sequence.First());
+				node.Sequence = node.Sequence.Skip(1).ToList();
 			}
 
-			return this;
+			return node;
 		}
 	}
 
@@ -61,9 +61,10 @@ namespace AoC._8
 		static void Star1(List<int> sequence)
 		{
 			var firstNode = new Node();
-			firstNode.FillNode(sequence);
+			firstNode.Sequence = sequence;
+			Node.FillNode(firstNode);
 
-			Console.WriteLine($"Metadata Sum {firstNode.MetadataCompleteSum}");
+			Console.WriteLine($"Star 1 Metadata Sum: {firstNode.MetadataSum}");
 		}
 
 		static void Main(string[] args)
@@ -71,7 +72,9 @@ namespace AoC._8
 			Console.WriteLine("Advent of Code Day 8!");
 
 			var sequence = System.IO.File.ReadAllText("input.txt").Split(',').Select(Parse).ToList();
-			Star1(sequence);
+			Star1(sequence.Select(c => c).ToList()); // create copy and start
+
+			Console.ReadLine();
 		}
 	}
 }
