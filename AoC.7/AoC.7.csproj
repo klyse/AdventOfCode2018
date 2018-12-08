@@ -3,9 +3,9 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <RootNamespace>AoC._5</RootNamespace>
-    <AssemblyVersion>1.0.6.18340</AssemblyVersion>
-    <FileVersion>1.0.6.18340</FileVersion>
+    <RootNamespace>AoC._7</RootNamespace>
+    <AssemblyVersion>1.0.63.18341</AssemblyVersion>
+    <FileVersion>1.0.63.18341</FileVersion>
   </PropertyGroup>
 
 </Project>
