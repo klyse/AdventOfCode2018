@@ -11,8 +11,6 @@ namespace AoC._8
 
 		public List<int> Metadata { get; set; } = new List<int>();
 
-		public bool HasChildNodes => ChildNodes.Any();
-		
 		public int MetadataSum
 		{
 			get
@@ -22,6 +20,26 @@ namespace AoC._8
 				foreach (var childNode in ChildNodes)
 				{
 					sum += childNode.MetadataSum;
+				}
+
+				return sum;
+			}
+		}
+
+		public int NodeSum
+		{
+			get
+			{
+				if (!ChildNodes.Any())
+					return Metadata.Sum();
+
+				var sum = 0;
+				foreach (var metadata in Metadata)
+				{
+					if (metadata > 0 && metadata < ChildNodes.Count)
+					{
+						sum += ChildNodes[metadata - 1].NodeSum;
+					}
 				}
 
 				return sum;
@@ -58,21 +76,18 @@ namespace AoC._8
 
 	class Program
 	{
-		static void Star1(List<int> sequence)
-		{
-			var firstNode = new Node();
-			firstNode.Sequence = sequence;
-			Node.FillNode(firstNode);
-
-			Console.WriteLine($"Star 1 Metadata Sum: {firstNode.MetadataSum}");
-		}
-
 		static void Main(string[] args)
 		{
 			Console.WriteLine("Advent of Code Day 8!");
 
 			var sequence = System.IO.File.ReadAllText("input.txt").Split(',').Select(Parse).ToList();
-			Star1(sequence.Select(c => c).ToList()); // create copy and start
+
+			var firstNode = new Node();
+			firstNode.Sequence = sequence;
+			Node.FillNode(firstNode);
+
+			Console.WriteLine($"Star 1 Metadata Sum: {firstNode.MetadataSum}");
+			Console.WriteLine($"Star 2 Node Sum: {firstNode.NodeSum}");
 
 			Console.ReadLine();
 		}
