@@ -1,55 +1,81 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
 
 namespace AoC._9
 {
 	public class Program
 	{
-		public static int CalculateWinningElveScore(int nrElves, int nrMarbles)
+		public static BigInteger CalculateWinningElveScore(int nrElves, int nrMarbles)
 		{
 			var marbleCircle = new List<int>();
-			var playerScore = new int[nrElves];
+			var playerScore = new BigInteger[nrElves];
 
 			var currentPlayer = 0;
 			var currentMarble = 0;
 			marbleCircle.Add(currentMarble);
 
-			Console.WriteLine("[-] (0)");
-			for (var i = 1; i < nrMarbles - 1; ++i)
+			if (nrMarbles < 30 && nrElves < 10)
+				Console.WriteLine("[-] (0)");
+
+			for (var i = 1; i <= nrMarbles; ++i)
 			{
-				currentMarble = ((currentMarble + 1) % marbleCircle.Count) + 1;
-				marbleCircle.Insert(currentMarble, i);
+				if (i % 10000 == 0)
+					Console.WriteLine($"Current Marble {i}");
 
-
-				Console.Write($"[{currentPlayer}]");
-
-				foreach (var marble in marbleCircle)
+				if (i % 23 == 0)
 				{
-					if (marble == i)
-					{
-						Console.Write($"({marble.ToString()})".PadLeft(4));
-					}
-					else
-					{
-						Console.Write(marble.ToString().PadLeft(4));
-					}
+					playerScore[currentPlayer] += i;
+					currentMarble = currentMarble - 7;
+					if (currentMarble < 0)
+						currentMarble = marbleCircle.Count + currentMarble;
+
+					playerScore[currentPlayer] += marbleCircle[currentMarble];
+
+					marbleCircle.RemoveAt(currentMarble);
+				}
+				else
+				{
+					currentMarble = ((currentMarble + 1) % marbleCircle.Count) + 1;
+					marbleCircle.Insert(currentMarble, i);
 				}
 
-				Console.WriteLine();
+				if (nrMarbles < 30 && nrElves < 10)
+				{
+					Console.Write($"[{currentPlayer}]");
+
+					foreach (var marble in marbleCircle)
+					{
+						if (marble == i)
+						{
+							Console.Write($"({marble.ToString()})".PadLeft(4));
+						}
+						else
+						{
+							Console.Write(marble.ToString().PadLeft(4));
+						}
+					}
+
+					Console.WriteLine();
+				}
 
 				currentPlayer++;
 				currentPlayer %= nrElves;
 			}
 
 
-			return 123;
+			return playerScore.Max();
 		}
 
-		static void Main(string[] args)
+		static void Main()
 		{
 			Console.WriteLine("Advent of Code Day 9!");
 
-			CalculateWinningElveScore(9, 25);
+			Console.WriteLine("Example:");
+			Console.WriteLine($"Example score: {CalculateWinningElveScore(9, 25)}");
+			Console.WriteLine($"Star 1: {CalculateWinningElveScore(430, 71588)}");
+			Console.WriteLine($"Star 2: {CalculateWinningElveScore(430, 71588 * 100)}");
 
 			Console.ReadLine();
 		}
