@@ -6,12 +6,6 @@ namespace AoC._9.Test
 	public class ProgramTest
 	{
 		[TestCase(9, 25, ExpectedResult = 32)]
-		[TestCase(9, 10, ExpectedResult = 32)]
-		[TestCase(9, 100, ExpectedResult = 32)]
-		[TestCase(9, 1000, ExpectedResult = 32)]
-		[TestCase(9, 10000, ExpectedResult = 32)]
-		[TestCase(9, 100000, ExpectedResult = 32)]
-		[TestCase(9, 1000000, ExpectedResult = 32)]
 		[TestCase(10, 1618, ExpectedResult = 8317)]
 		[TestCase(13, 7999, ExpectedResult = 146373)]
 		[TestCase(17, 1104, ExpectedResult = 2764)]
