@@ -379,19 +379,20 @@ namespace AoC._10
 						pic?.SetPixel((myPoint.X + minX), (myPoint.Y + minY), Color.Black);
 					}
 
-					pic.Save($"img/test{second}.png", ImageFormat.Png);
+					pic.Save($"{second}.png", ImageFormat.Png);
 				}
 			}
 			catch (Exception)
 			{
 			}
+
 		}
 
 		static void Main(string[] args)
 		{
 			Console.WriteLine("Advent of Code Day 10!");
 
-			for (var second = 0; second < 100000; second++)
+			for (var second = 0; second < 10600; second++)
 			{
 				foreach (var myPoint in MyPoints)
 				{
@@ -402,6 +403,9 @@ namespace AoC._10
 				if (second > 10500 && second < 10600)
 					DrawImage(second);
 			}
+
+			Console.WriteLine("Star 1: 'XPFXXKL'. Open file '10520.png'");
+			Console.WriteLine("This answer was found by generating loads of images and checking for the one with the lowest size.");
 
 			Console.ReadLine();
 		}
