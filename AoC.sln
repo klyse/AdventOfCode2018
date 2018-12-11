@@ -15,7 +15,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AoC.9", "AoC.9\AoC.9.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AoC.9.Test", "AoC.9.Test\AoC.9.Test.csproj", "{4530C48C-C735-4189-80CF-CFF4A49B923E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AoC.10", "AoC.10\AoC.10.csproj", "{6A175A2E-F5DD-444C-BA7C-E5C50B3E1AA5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AoC.10", "AoC.10\AoC.10.csproj", "{6A175A2E-F5DD-444C-BA7C-E5C50B3E1AA5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AoC.11", "AoC.11\AoC.11.csproj", "{D986F038-94AD-481D-8730-EBE9BE51FE96}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AoC.11.Test", "AoC.11.Test\AoC.11.Test.csproj", "{C26EAE7F-E0AE-44DB-A5E5-6E82556BE973}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +55,14 @@ Global
 		{6A175A2E-F5DD-444C-BA7C-E5C50B3E1AA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A175A2E-F5DD-444C-BA7C-E5C50B3E1AA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6A175A2E-F5DD-444C-BA7C-E5C50B3E1AA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D986F038-94AD-481D-8730-EBE9BE51FE96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D986F038-94AD-481D-8730-EBE9BE51FE96}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D986F038-94AD-481D-8730-EBE9BE51FE96}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D986F038-94AD-481D-8730-EBE9BE51FE96}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C26EAE7F-E0AE-44DB-A5E5-6E82556BE973}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C26EAE7F-E0AE-44DB-A5E5-6E82556BE973}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C26EAE7F-E0AE-44DB-A5E5-6E82556BE973}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C26EAE7F-E0AE-44DB-A5E5-6E82556BE973}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
