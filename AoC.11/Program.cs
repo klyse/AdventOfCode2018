@@ -27,6 +27,24 @@ namespace AoC._11
 			return matrix;
 		}
 
+		public static int GetBoxSum(int[,] matrix, int boxX, int boxY)
+		{
+			int currentSum = 0;
+			for (int x = 0; x < matrix.GetLength(0) - boxX; x++)
+			{
+				for (int y = 0; y < matrix.GetLength(1) - boxY; y++)
+				{
+					for (int x1 = 0; x1 < boxX; x1++)
+					{
+						for (int y1 = 0; y1 < boxY; y1++)
+						{
+							
+						}
+					}
+				}
+			}
+		}
+
 		static void Main(string[] args)
 		{
 			Console.WriteLine("Advent of Code Day 10!");
