@@ -51,7 +51,7 @@ namespace AoC._9
 				if (i % 23 == 0)
 				{
 					currentMarble = currentMarble.GetNodeAtPos(-7);
-					playerScore[currentPlayer] += currentMarble.Value;
+					playerScore[currentPlayer] += currentMarble.Value + i;
 
 					var nextMarble = currentMarble.Next;
 					marbleCircle.Remove(currentMarble);
@@ -75,7 +75,6 @@ namespace AoC._9
 		{
 			Console.WriteLine("Advent of Code Day 9!");
 
-			Console.WriteLine("Example:");
 			Console.WriteLine($"Example score: {CalculateWinningElveScore(9, 25)}");
 			Console.WriteLine($"Star 1: {CalculateWinningElveScore(430, 71588)}");
 			Console.WriteLine($"Star 2: {CalculateWinningElveScore(430, 71588 * 100)}");
