@@ -4,6 +4,8 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net472</TargetFramework>
     <RootNamespace>AoC._10</RootNamespace>
+    <AssemblyVersion>1.0.2.18345</AssemblyVersion>
+    <FileVersion>1.0.2.18345</FileVersion>
   </PropertyGroup>
 
 </Project>

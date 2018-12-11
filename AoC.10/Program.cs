@@ -392,7 +392,7 @@ namespace AoC._10
 		{
 			Console.WriteLine("Advent of Code Day 10!");
 
-			for (var second = 0; second < 10600; second++)
+			for (var second = 1; second < 10600; second++)
 			{
 				foreach (var myPoint in MyPoints)
 				{

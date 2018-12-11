@@ -4,8 +4,8 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <RootNamespace>AoC._7</RootNamespace>
-    <AssemblyVersion>1.0.63.18341</AssemblyVersion>
-    <FileVersion>1.0.63.18341</FileVersion>
+    <AssemblyVersion>1.0.64.18345</AssemblyVersion>
+    <FileVersion>1.0.64.18345</FileVersion>
   </PropertyGroup>
 
 </Project>
