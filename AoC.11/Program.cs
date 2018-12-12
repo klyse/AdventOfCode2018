@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace AoC._11
 {
@@ -36,14 +38,21 @@ namespace AoC._11
 
 			for (var x = 0; x < matrix.GetLength(0) - boxX; x++)
 			{
+				var preCalculated = new int[matrix.GetLength(1)];
+
 				for (var y = 0; y < matrix.GetLength(1) - boxY; y++)
 				{
 					for (var x1 = 0; x1 < boxX; x1++)
 					{
-						for (var y1 = 0; y1 < boxY; y1++)
-						{
-							currentSum[x, y] += matrix[x + x1, y + y1];
-						}
+						preCalculated[y] += matrix[x + x1, y];
+					}
+				}
+
+				for (var y = 0; y < matrix.GetLength(1) - boxY; y++)
+				{
+					for (var y1 = 0; y1 < boxX; y1++)
+					{
+						currentSum[x, y] += preCalculated[y + y1];
 					}
 
 					if (currentSum[x, y] > maxFound)
@@ -62,10 +71,33 @@ namespace AoC._11
 		{
 			Console.WriteLine("Advent of Code Day 10!");
 
+			Console.WriteLine($"Power Grid Serial Number: {PowerGridSerialNumber}");
+
 			var matrix = CalculateMatrix(PowerGridSerialNumber);
 
-			var biggestResult = GetBoxSum(matrix, 3, 3);
-			Console.WriteLine($"Star 1: {biggestResult.x},{biggestResult.y}");
+			var resultStar1 = GetBoxSum(matrix, 3, 3);
+			Console.WriteLine($"Star 1: {resultStar1.x},{resultStar1.y} maxSum: {resultStar1.maxSum}");
+
+
+			var (maxSum, x, y, box) = (0, 0, 0, 0);
+			var @lock = new object();
+
+			Parallel.For(0, 300, (i) =>
+			{
+				var sum = GetBoxSum(matrix, i, i);
+
+				lock (@lock)
+				{
+					if (sum.maxSum > maxSum)
+					{
+						maxSum = sum.maxSum;
+						y = sum.y;
+						x = sum.x;
+						box = i;
+					}
+				}
+			});
+			Console.WriteLine($"Star 2: {x},{y},{box} maxSum: {maxSum}");
 
 			Console.ReadLine();
 		}
