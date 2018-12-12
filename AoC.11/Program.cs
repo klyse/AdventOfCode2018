@@ -69,7 +69,7 @@ namespace AoC._11
 
 		static void Main(string[] args)
 		{
-			Console.WriteLine("Advent of Code Day 10!");
+			Console.WriteLine("Advent of Code Day 11!");
 
 			Console.WriteLine($"Power Grid Serial Number: {PowerGridSerialNumber}");
 
