@@ -16,5 +16,38 @@ namespace AoC._11.Test
 
 			return grid[x, y];
 		}
+
+		[TestCase(18, ExpectedResult = 33)]
+		[TestCase(42, ExpectedResult = 21)]
+		public object GetBoxSum_TakesParamsAndCalculatesBiggestSum_ReturnsXValue(int serialNr)
+		{
+			var grid = Program.CalculateMatrix(serialNr);
+
+			var res = Program.GetBoxSum(grid, 3, 3);
+
+			return res.x;
+		}
+
+		[TestCase(18, ExpectedResult = 45)]
+		[TestCase(42, ExpectedResult = 61)]
+		public object GetBoxSum_TakesParamsAndCalculatesBiggestSum_ReturnsYValue(int serialNr)
+		{
+			var grid = Program.CalculateMatrix(serialNr);
+
+			var res = Program.GetBoxSum(grid, 3, 3);
+
+			return res.y;
+		}
+
+		[TestCase(18, ExpectedResult = 29)]
+		[TestCase(42, ExpectedResult = 30)]
+		public object GetBoxSum_TakesParamsAndCalculatesBiggestSum_ReturnsSum(int serialNr)
+		{
+			var grid = Program.CalculateMatrix(serialNr);
+
+			var res = Program.GetBoxSum(grid, 3, 3);
+
+			return res.maxSum;
+		}
 	}
 }
