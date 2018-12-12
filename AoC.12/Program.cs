@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.InteropServices;
 
 namespace AoC._12
@@ -39,6 +40,11 @@ namespace AoC._12
 		public static string SequenceInput { get; } = "#...####.##..####..#.##....##...###.##.#..######..#..#..###..##.#.###.#####.##.#.#.#.##....#..#..#..";
 
 		//public static string SequenceInput { get; } = "#..#.#..##......###...###";
+
+		public static string RecurringPattern { get; } =
+			"####.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#...####.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#";
+
+		public static int ConstantOffset { get; } = 57;
 
 		public static List<Pot> Sequence { get; } = new List<Pot>();
 
@@ -132,6 +138,8 @@ namespace AoC._12
 				}
 			}
 
+			Console.WriteLine(string.Concat(sequence.Select(c => c.ContainsFlower ? '#' : '.')));
+
 			long index = newSequence.FindIndex(c => c.Center) * -1;
 
 			foreach (var t in newSequence)
@@ -145,8 +153,21 @@ namespace AoC._12
 
 			if (_evolutionCount >= maxEvolution)
 			{
+				_evolutionCount = 0;
 				return newSequence;
 			}
+
+			var firstFlower = sequence.FindIndex(c => c.ContainsFlower);
+			var offset = sequence[firstFlower].Index + 1;
+			BigInteger sum = 0;
+
+			foreach (var pat in RecurringPattern)
+			{
+				sum += pat == '#' ? offset : 0;
+				offset++;
+			}
+
+			Console.WriteLine($"Evo:{_evolutionCount} Sum:{newSequence.Where(c => c.ContainsFlower).Sum(c => c.Index)} FirstFlow:{firstFlower} Offs:{sequence[firstFlower].Index + 1} ExpSum:{sum}");
 
 			return Evolution(newSequence, maxEvolution);
 		}
@@ -167,8 +188,36 @@ namespace AoC._12
 				first = false;
 			}
 
-			var evolution1 = Evolution(Sequence.Select(c => c).ToList(), 20);
+			var evolution1 = Evolution(Sequence.Select(c => c).ToList(), 10);
 			Console.WriteLine($"Star 1: {evolution1.Where(c => c.ContainsFlower).Sum(c => c.Index)}");
+
+			Evolution(Sequence.Select(c => c).ToList(), 150);
+
+			Console.WriteLine();
+			Console.WriteLine();
+			Console.WriteLine();
+
+			Console.WriteLine("Explanation Star two:");
+			Console.WriteLine("The pattern starts to find a default sequence after evolution ~113 or so.");
+			Console.WriteLine($"Repeating Pattern: {RecurringPattern}");
+
+			Console.WriteLine("From there on you can calculate the number offset by making a few example calculations:");
+			Console.WriteLine("Evolution 148: Offset for first flower=91: constantOffset=57");
+			Console.WriteLine("Evolution 149: Offset for first flower=92: constantOffset=57");
+
+			Console.WriteLine("Since the pattern seems to be linear the calculation is easy: evolution-constantOffset=offset");
+			Console.WriteLine("Sum up the numbers beginning by the offset and following the repeating pattern");
+
+			var offset = 50000000000 - ConstantOffset;
+			BigInteger sum = 0;
+
+			foreach (var pat in RecurringPattern)
+			{
+				sum += pat == '#' ? offset : 0;
+				offset++;
+			}
+
+			Console.WriteLine($"Star 2: {sum}");
 
 			Console.ReadLine();
 		}
