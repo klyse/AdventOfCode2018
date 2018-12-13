@@ -6,6 +6,7 @@ using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Threading;
+
 // ReSharper disable ConditionIsAlwaysTrueOrFalse
 
 namespace AoC._13
@@ -38,11 +39,21 @@ namespace AoC._13
 		}
 	}
 
-	public class Cart
+	public class Cart : ICloneable
 	{
 		public Point Point { get; set; }
 		public char Orientation { get; set; }
 		public int CrossDir { get; set; }
+
+		public object Clone()
+		{
+			return new Cart
+			{
+				Point = Point,
+				Orientation = Orientation,
+				CrossDir = CrossDir
+			};
+		}
 	}
 
 	public static class CharHelper
@@ -123,9 +134,10 @@ namespace AoC._13
 		public static char[,] InputMatrix { get; set; }
 		public static List<Cart> Carts { get; set; } = new List<Cart>();
 
-		static Point Tick()
+		static Point Tick(List<Cart> carts, bool star2 = false)
 		{
-			foreach (var cart in Carts.OrderBy(c => c.Point.X).ThenBy(c => c.Point.Y))
+			var toRemove = new List<Cart>();
+			foreach (var cart in carts.OrderBy(c => c.Point.X).ThenBy(c => c.Point.Y))
 			{
 				var currentOrientation = cart.Orientation;
 				var newOrientation = currentOrientation;
@@ -157,11 +169,23 @@ namespace AoC._13
 					throw new Exception("Cart has no orientation");
 				}
 
-				if (Carts.Any(c => c.Point == nextPoint))
+				if (!star2)
 				{
-					cart.Point = nextPoint;
-					cart.Orientation = 'X';
-					return nextPoint;
+					if (carts.Any(c => c.Point == nextPoint))
+					{
+						cart.Point = nextPoint;
+						cart.Orientation = 'X';
+						return nextPoint;
+					}
+				}
+				else
+				{
+					var badCart = carts.FirstOrDefault(c => c.Point == nextPoint);
+					if (badCart != null)
+					{
+						toRemove.Add(badCart);
+						toRemove.Add(cart);
+					}
 				}
 
 				if (nextPt.IsCorner())
@@ -210,16 +234,21 @@ namespace AoC._13
 				cart.Orientation = newOrientation;
 			}
 
+			foreach (var cart in toRemove)
+			{
+				carts.Remove(cart);
+			}
+
 			return Point.Empty;
 		}
 
-		public static void DrawMatrix()
+		public static void DrawMatrix(List<Cart> carts)
 		{
 			for (var x = 0; x < InputMatrix.GetLength(0); x++)
 			{
 				for (var y = 0; y < InputMatrix.GetLength(1); y++)
 				{
-					var cart = Carts.FirstOrDefault(c => c.Point.X == x && c.Point.Y == y);
+					var cart = carts.FirstOrDefault(c => c.Point.X == x && c.Point.Y == y);
 					if (cart is null)
 					{
 						Console.Write(InputMatrix[x, y]);
@@ -238,10 +267,11 @@ namespace AoC._13
 		{
 			Console.WriteLine("Advent of Code Day 13!");
 
-			var example = true;
+			var example = false;
 			var inputFile = "input.txt";
 			if (example)
-				inputFile = "example.txt";
+				inputFile = "example1.txt";
+				//inputFile = "example2.txt";
 
 			var input = File.ReadAllLines(inputFile);
 			var yLen = input.First().Length;
@@ -273,22 +303,52 @@ namespace AoC._13
 
 			var consoleOffset = Console.CursorTop;
 			Point collision;
+			var cartCopy = Carts.Select(c => (Cart)c.Clone()).ToList();
+
+
 			if (example)
-				DrawMatrix();
+				DrawMatrix(cartCopy);
 			do
 			{
-				collision = Tick();
+				collision = Tick(cartCopy);
 
 				if (example)
 				{
 					Console.CursorLeft = 0;
 					Console.CursorTop = consoleOffset;
-					DrawMatrix();
+					DrawMatrix(cartCopy);
 					Thread.Sleep(400);
 				}
 			} while (collision == Point.Empty);
 
 			Console.WriteLine($"Star 1: First collision at: {collision.Y},{collision.X}");
+
+
+			consoleOffset = Console.CursorTop;
+			cartCopy = Carts.Select(c => (Cart)c.Clone()).ToList();
+			if (example)
+				DrawMatrix(cartCopy);
+
+			do
+			{
+				Tick(cartCopy,true);
+
+				if (example)
+				{
+					Console.CursorLeft = 0;
+					Console.CursorTop = consoleOffset;
+					DrawMatrix(cartCopy);
+					Thread.Sleep(400);
+				}
+				if (cartCopy.Count == 1)
+				{
+					break;
+				}
+
+			} while (true);
+
+			Console.WriteLine($"Star 2: Lat carts position: {cartCopy.First().Point.Y},{cartCopy.First().Point.X}");
+
 
 			Console.ReadLine();
 		}
