@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -67,7 +66,7 @@ namespace AoC._11
 			return (maxFound, maxX, maxY);
 		}
 
-		static void Main(string[] args)
+		static void Main()
 		{
 			Console.WriteLine("Advent of Code Day 11!");
 

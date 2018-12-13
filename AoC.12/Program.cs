@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using System.Runtime.InteropServices;
 
 namespace AoC._12
 {
@@ -104,7 +103,7 @@ namespace AoC._12
 
 		public static List<Rule> Rules { get; } = new List<Rule>();
 
-		private static long _evolutionCount = 0;
+		private static long _evolutionCount;
 
 		public static List<Pot> Evolution(List<Pot> sequence, long maxEvolution)
 		{

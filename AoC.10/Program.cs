@@ -365,8 +365,6 @@ namespace AoC._10
 			var minY = Math.Abs(MyPoints.Min(c => c.Y)) + 1;
 			var maxX = Math.Abs(MyPoints.Max(c => c.X));
 			var maxY = Math.Abs(MyPoints.Max(c => c.Y));
-			var minXPx = 0;
-			var minYPx = 0;
 			var maxXPx = minX + maxX;
 			var maxYPx = minY + maxY;
 
@@ -376,7 +374,7 @@ namespace AoC._10
 				{
 					foreach (var myPoint in MyPoints)
 					{
-						pic?.SetPixel((myPoint.X + minX), (myPoint.Y + minY), Color.Black);
+						pic.SetPixel((myPoint.X + minX), (myPoint.Y + minY), Color.Black);
 					}
 
 					pic.Save($"{second}.png", ImageFormat.Png);
@@ -384,11 +382,11 @@ namespace AoC._10
 			}
 			catch (Exception)
 			{
+				// ignored
 			}
-
 		}
 
-		static void Main(string[] args)
+		static void Main()
 		{
 			Console.WriteLine("Advent of Code Day 10!");
 
