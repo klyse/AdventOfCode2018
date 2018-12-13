@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.InteropServices;
+using System.Threading;
+// ReSharper disable ConditionIsAlwaysTrueOrFalse
 
 namespace AoC._13
 {
@@ -67,6 +71,51 @@ namespace AoC._13
 		{
 			return c == '+';
 		}
+
+		public static bool IsCorner(this char c)
+		{
+			return c == '\\' || c == '/';
+		}
+
+		public static bool IsCart(this char c)
+		{
+			var cartSign = new[] {'<', '>', '^', 'v'};
+
+			return cartSign.Contains(c);
+		}
+
+		public static char MirrorOrientation(this char c)
+		{
+			if (c == '>')
+				return '<';
+			if (c == '<')
+				return '>';
+			if (c == '^')
+				return 'v';
+			if (c == 'v')
+				return '^';
+
+			throw new Exception("not recognized char");
+		}
+
+		public static char ShiftLeft(this char c)
+		{
+			if (c == '>')
+				return '^';
+			if (c == '<')
+				return 'v';
+			if (c == '^')
+				return '<';
+			if (c == 'v')
+				return '>';
+
+			throw new Exception("not recognized char");
+		}
+
+		public static char ShiftRight(this char c)
+		{
+			return c.ShiftLeft().MirrorOrientation();
+		}
 	}
 
 	public class Program
@@ -74,64 +123,101 @@ namespace AoC._13
 		public static char[,] InputMatrix { get; set; }
 		public static List<Cart> Carts { get; set; } = new List<Cart>();
 
-		static void Tick(char[,] matrix)
+		static Point Tick()
 		{
 			foreach (var cart in Carts.OrderBy(c => c.Point.X).ThenBy(c => c.Point.Y))
 			{
 				var currentOrientation = cart.Orientation;
+				var newOrientation = currentOrientation;
 				var nextPt = ' ';
+				Point nextPoint;
 
 				if (currentOrientation.IsUp())
-					nextPt = matrix[cart.Point.X - 1, cart.Point.Y];
-				if (currentOrientation.IsDown())
-					nextPt = matrix[cart.Point.X + 1, cart.Point.Y];
-				if (currentOrientation.IsLeft())
-					nextPt = matrix[cart.Point.X, cart.Point.Y - 1];
-				if (currentOrientation.IsRight())
-					nextPt = matrix[cart.Point.X, cart.Point.Y + 1];
-
-				if (nextPt == '\\')
 				{
-					
+					nextPoint = new Point(cart.Point.X - 1, cart.Point.Y);
+					nextPt = InputMatrix[cart.Point.X - 1, cart.Point.Y];
 				}
+				else if (currentOrientation.IsDown())
+				{
+					nextPoint = new Point(cart.Point.X + 1, cart.Point.Y);
+					nextPt = InputMatrix[cart.Point.X + 1, cart.Point.Y];
+				}
+				else if (currentOrientation.IsLeft())
+				{
+					nextPoint = new Point(cart.Point.X, cart.Point.Y - 1);
+					nextPt = InputMatrix[cart.Point.X, cart.Point.Y - 1];
+				}
+				else if (currentOrientation.IsRight())
+				{
+					nextPoint = new Point(cart.Point.X, cart.Point.Y + 1);
+					nextPt = InputMatrix[cart.Point.X, cart.Point.Y + 1];
+				}
+				else
+				{
+					throw new Exception("Cart has no orientation");
+				}
+
+				if (Carts.Any(c => c.Point == nextPoint))
+				{
+					cart.Point = nextPoint;
+					cart.Orientation = 'X';
+					return nextPoint;
+				}
+
+				if (nextPt.IsCorner())
+				{
+					bool mirror = nextPt == '\\';
+
+					if (currentOrientation.IsUp())
+					{
+						newOrientation = '<';
+					}
+					else if (currentOrientation.IsDown())
+					{
+						newOrientation = '>';
+					}
+					else if (currentOrientation.IsLeft())
+					{
+						newOrientation = '^';
+					}
+					else if (currentOrientation.IsRight())
+					{
+						newOrientation = 'v';
+					}
+
+					newOrientation = mirror ? newOrientation : newOrientation.MirrorOrientation();
+				}
+				else if (nextPt.IsCrossing())
+				{
+					switch (cart.CrossDir)
+					{
+						case 0: // left
+							cart.CrossDir++;
+							newOrientation = currentOrientation.ShiftLeft();
+							break;
+						case 1: // straight
+							newOrientation = currentOrientation; // same
+							cart.CrossDir++;
+							break;
+						case 2: // right
+							newOrientation = currentOrientation.ShiftRight();
+							cart.CrossDir = 0;
+							break;
+					}
+				}
+
+				cart.Point = nextPoint;
+				cart.Orientation = newOrientation;
 			}
+
+			return Point.Empty;
 		}
 
-		static void Main()
+		public static void DrawMatrix()
 		{
-			Console.WriteLine("Advent of Code Day 13!");
-
-			var input = System.IO.File.ReadAllLines("example.txt");
-			var yLen = input.First().Length;
-			var xLen = input.Length;
-
-			InputMatrix = new char[xLen, yLen];
-
-			for (var x = 0; x < xLen; x++)
+			for (var x = 0; x < InputMatrix.GetLength(0); x++)
 			{
-				var split = input[x].Select(c => c).ToArray();
-				for (var y = 0; y < yLen; y++)
-				{
-					var cEl = split[y];
-
-					if (cEl == '^' || cEl == '<')
-					{
-						Carts.Add(new Cart {Orientation = cEl, Point = new Point(x, y)});
-						cEl = '|';
-					}
-					else if (cEl == '>' || cEl == 'v')
-					{
-						Carts.Add(new Cart {Orientation = cEl, Point = new Point(x, y)});
-						cEl = '-';
-					}
-
-					InputMatrix[x, y] = cEl;
-				}
-			}
-
-			for (var x = 0; x < xLen; x++)
-			{
-				for (var y = 0; y < yLen; y++)
+				for (var y = 0; y < InputMatrix.GetLength(1); y++)
 				{
 					var cart = Carts.FirstOrDefault(c => c.Point.X == x && c.Point.Y == y);
 					if (cart is null)
@@ -146,7 +232,63 @@ namespace AoC._13
 
 				Console.WriteLine();
 			}
+		}
 
+		static void Main()
+		{
+			Console.WriteLine("Advent of Code Day 13!");
+
+			var example = true;
+			var inputFile = "input.txt";
+			if (example)
+				inputFile = "example.txt";
+
+			var input = File.ReadAllLines(inputFile);
+			var yLen = input.First().Length;
+			var xLen = input.Length;
+
+			InputMatrix = new char[xLen, yLen];
+
+			for (var x = 0; x < xLen; x++)
+			{
+				var split = input[x].Select(c => c).ToArray();
+				for (var y = 0; y < yLen; y++)
+				{
+					var cEl = split[y];
+
+					if (cEl == '^' || cEl == 'v')
+					{
+						Carts.Add(new Cart {Orientation = cEl, Point = new Point(x, y)});
+						cEl = '|';
+					}
+					else if (cEl == '>' || cEl == '<')
+					{
+						Carts.Add(new Cart {Orientation = cEl, Point = new Point(x, y)});
+						cEl = '-';
+					}
+
+					InputMatrix[x, y] = cEl;
+				}
+			}
+
+			var consoleOffset = Console.CursorTop;
+			Point collision;
+			if (example)
+				DrawMatrix();
+			do
+			{
+				collision = Tick();
+
+				if (example)
+				{
+					Console.CursorLeft = 0;
+					Console.CursorTop = consoleOffset;
+					DrawMatrix();
+					Thread.Sleep(400);
+				}
+			} while (collision == Point.Empty);
+
+			Console.WriteLine($"Star 1: First collision at: {collision.Y},{collision.X}");
 
 			Console.ReadLine();
 		}
