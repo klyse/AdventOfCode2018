@@ -266,7 +266,7 @@ namespace AoC._13
 		{
 			Console.WriteLine("Advent of Code Day 13!");
 
-			var example = true;
+			var example = false;
 			var inputFile = "input.txt";
 			if (example)
 				//inputFile = "example1.txt";
