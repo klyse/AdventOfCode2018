@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Threading;
 
@@ -141,7 +140,7 @@ namespace AoC._13
 			{
 				var currentOrientation = cart.Orientation;
 				var newOrientation = currentOrientation;
-				var nextPt = ' ';
+				char nextPt;
 				Point nextPoint;
 
 				if (currentOrientation.IsUp())
@@ -267,11 +266,11 @@ namespace AoC._13
 		{
 			Console.WriteLine("Advent of Code Day 13!");
 
-			var example = false;
+			var example = true;
 			var inputFile = "input.txt";
 			if (example)
-				inputFile = "example1.txt";
-				//inputFile = "example2.txt";
+				//inputFile = "example1.txt";
+				inputFile = "example2.txt";
 
 			var input = File.ReadAllLines(inputFile);
 			var yLen = input.First().Length;
